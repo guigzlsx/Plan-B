@@ -1,0 +1,4 @@
+[
+  { "context": "bonjour", "message": "Salut, comment puis-je vous aider ?" },
+  { "context": "merci", "message": "Avec plaisir ! Si vous avez d'autres questions, n'hésitez pas." }
+]
