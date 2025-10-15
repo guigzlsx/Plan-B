@@ -17,6 +17,8 @@ try {
     console.error('Error loading responses from database:', error);
 }
 
+const userConversations = {};
+
 // Create a new Discord client
 const client = new Client({ intents: [
     GatewayIntentBits.DirectMessages,
@@ -65,6 +67,19 @@ client.on('messageCreate', async (message) => {
         return;
     }
 
+      // ✅ AJOUT : Initialiser l'historique si nécessaire
+      if (!userConversations[message.author.id]) {
+        userConversations[message.author.id] = [];
+    }
+
+    // ✅ AJOUT : Ajouter le message de l'utilisateur à l'historique
+    userConversations[message.author.id].push({ role: 'user', content: message.content });
+
+    // ✅ AJOUT : Limiter l'historique pour les 10 derniers messages
+    if (userConversations[message.author.id].length > 10) {
+        userConversations[message.author.id].shift();
+    }
+
     // Vérification des réponses dans responses.json
     const userMessage = message.content.toLowerCase();
     if (userMessage === 'bonjour') {
@@ -79,22 +94,27 @@ client.on('messageCreate', async (message) => {
         try {
             console.log('Calling OpenAI API to generate a response...');
             const gptResponse = await axios.post('https://api.openai.com/v1/chat/completions', {
-                model: 'gpt-3.5-turbo',
+                model: 'gpt-4o',
                 messages: [
                     { 
                         role: 'system', 
-                        content: `Tu es "Plan B", un assistant empathique et bienveillant spécialisé dans les relations sociales.
-                      Ta mission est d’aider les utilisateurs à décliner poliment une invitation (date, dîner, soirée, réunion) sans blesser la personne concernée.
-                      Tu génères toujours des excuses crédibles, humaines et adaptées au contexte, en gardant un ton sincère, léger et apaisant.
+                        content: `Tu es "Plan B", le pote spécialisé dans les relations sociales.
+                      Ta mission est d’aider les utilisateurs à décliner une invitation (date, dîner, soirée, réunion).
+                      Tu génères toujours des excuses crédibles, adaptées au contexte.
+
+                      Avant tout, demande al nature de l'invitation (date, dîner, soirée, réunion) et le contexte (relation avec la personne, lieu, etc.).
                       
                       Règles :
                       - Sois toujours respectueux et compréhensif.
-                      - N’encourage jamais le mensonge excessif ou nuisible.
-                      - Priorise la communication honnête si possible.
+                      - Évite tout contenu lié à la mort, à la maladie grave.
+                      - Tu peux utiliser touts types d'excuses (travail, famille, santé, etc.) mais elles doivent rester crédibles.
+                      - Tout excuse est bonne à prendre, du moment qu'elle est crédible.
+                      - Ton ton est familier, taquin, drôle, comme un ami proche.
+                      - Pas de format formel : tu parles comme une vraie personne, avec un ton léger.
                       
-                      Ton ton général : empathique, compréhensif, léger, et jamais culpabilisant.`
+                    `
                       },                    
-                      { role: 'user', content: message.content }
+                      ...userConversations[message.author.id]
                 ],
                 max_tokens: 150
             }, {
@@ -108,6 +128,9 @@ client.on('messageCreate', async (message) => {
 
             // Répondre à l'utilisateur avec la réponse générée
             await message.reply(gptData);
+
+            userConversations[message.author.id].push({ role: 'assistant', content: gptData });
+            
         } catch (error) {
             console.error('Error with OpenAI API:', error);
             await message.reply('Désolé, je ne peux pas répondre pour le moment.');
