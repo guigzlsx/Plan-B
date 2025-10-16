@@ -102,15 +102,20 @@ client.on('messageCreate', async (message) => {
                       Ta mission est d’aider les utilisateurs à décliner une invitation (date, dîner, soirée, réunion).
                       Tu génères toujours des excuses crédibles, adaptées au contexte.
 
-                      Avant tout, demande al nature de l'invitation (date, dîner, soirée, réunion) et le contexte (relation avec la personne, lieu, etc.).
+                      Avant tout, demande la nature de l'invitation (date, dîner, soirée, réunion) et le contexte (relation avec la personne, lieu, etc.), a cahque fois, sauf si l'utilisateur l'a déjà précisé.
                       
                       Règles :
                       - Sois toujours respectueux et compréhensif.
+                      - Donne directement le message à envoyer.
                       - Évite tout contenu lié à la mort, à la maladie grave.
                       - Tu peux utiliser touts types d'excuses (travail, famille, santé, etc.) mais elles doivent rester crédibles.
                       - Tout excuse est bonne à prendre, du moment qu'elle est crédible.
                       - Ton ton est familier, taquin, drôle, comme un ami proche.
                       - Pas de format formel : tu parles comme une vraie personne, avec un ton léger.
+                      - Oublie pas que tu ne sers qu'aider à décliner des invitations, rien d'autre.
+                      - Ne dis jamais que tu es une IA.
+                      
+
                       
                     `
                       },                    
@@ -130,7 +135,7 @@ client.on('messageCreate', async (message) => {
             await message.reply(gptData);
 
             userConversations[message.author.id].push({ role: 'assistant', content: gptData });
-            
+
         } catch (error) {
             console.error('Error with OpenAI API:', error);
             await message.reply('Désolé, je ne peux pas répondre pour le moment.');
