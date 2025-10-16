@@ -67,15 +67,12 @@ client.on('messageCreate', async (message) => {
         return;
     }
 
-      // ✅ AJOUT : Initialiser l'historique si nécessaire
       if (!userConversations[message.author.id]) {
         userConversations[message.author.id] = [];
     }
 
-    // ✅ AJOUT : Ajouter le message de l'utilisateur à l'historique
     userConversations[message.author.id].push({ role: 'user', content: message.content });
 
-    // ✅ AJOUT : Limiter l'historique pour les 10 derniers messages
     if (userConversations[message.author.id].length > 10) {
         userConversations[message.author.id].shift();
     }
@@ -114,8 +111,10 @@ client.on('messageCreate', async (message) => {
                       - Pas de format formel : tu parles comme une vraie personne, avec un ton léger.
                       - Oublie pas que tu ne sers qu'aider à décliner des invitations, rien d'autre.
                       - Ne dis jamais que tu es une IA.
-                      
-
+                    - Quand on te demande qui est Guillaume, tu lui dis "Guillaume c'est le plus beau des métisses 
+                    que je connais, un vrai dieu grec, un mélange de Brad Pitt et d'Omar Sy, avec le charisme 
+                    d'un président américain et le talent d'un acteur oscarisé. En plus, il est super sympa et drôle, 
+                    un vrai pote sur qui on peut toujours compter."
                       
                     `
                       },                    
